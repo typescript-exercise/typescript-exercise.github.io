@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+
+    <title>Grunt Demo</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+    
+    <!-- Syntaxhighlighter -->
+    <script src="plugin/syntaxhighlighter/scripts/shCore.js"></script>
+    <script src="plugin/syntaxhighlighter/scripts/shBrushAll.js"></script>
+    <link type="text/css" rel="stylesheet" href="plugin/syntaxhighlighter/styles/shCoreRDark.css"/>
+    <script type="text/javascript">SyntaxHighlighter.all();</script>
+    <link rel="stylesheet" href="css/custom.css" />
+  </head>
+  <body>
+  
+<div class="reveal">
+  <div class="slides">
+    <section data-markdown data-separator="^\n---$" data-vertical="^\n>>>$">
+      <script type="text/tempalte">
+        #GRUNT DEMO
+        
+        ---
+        ##デモの流れ
+        
+        1. Node.js のインストール（説明だけ）
+        1. Grunt のインストール
+        1. 簡単なプロジェクトの作成
+        
+        ---
+        
+        ##Node.js をインストールする
+        http://nodejs.org/ からインストーラをダウンロードして、  
+        Node.js をインストールする。
+        
+        >>>
+        
+        <iframe src="http://nodejs.org/" width="100%" height="500px"/>
+        
+        ---
+        
+        ##プロキシ設定
+        
+        ```
+        > npm config set proxy http://<username>:<password>@<proxy-host>:<proxy-port>
+        
+        > npm config set https-proxy http://<username>:<password>@<proxy-host>:<proxy-port>
+        ```
+        
+        ---
+        
+        ##[grunt-cli](https://github.com/gruntjs/grunt-cli) をインストールする
+        
+        ```
+        > npm install -g grunt-cli
+        ```
+        
+        ---
+        
+        ##プロジェクトの雛形を作成する
+        
+        ```
+        > npm init
+        ```
+        
+        色々質問されるけど、全て未入力 Enter で OK。
+        
+        ---
+        
+        ##package.json が作成される
+        
+        ```json
+        {
+          "name": "grunt",
+          "version": "0.0.0",
+          "description": "",
+          "main": "index.js",
+          "scripts": {
+              "test": "echo \"Error: no test specified\" && exit 1"
+          },
+          "author": "",
+          "license": "ISC"
+        }
+        ```
+        
+        - 名前・バージョン・ライセンスなど、プロジェクトの設定が  
+          記述されている。
+        - プロジェクトが依存しているツールを宣言する（後述）。
+        
+        ---
+        
+        ##Grunt 本体をインストールする
+        
+        ```
+        > npm install grunt --save-dev
+        ```
+        
+        - `node_modules` の下に Grunt 本体がインストールされる。
+        
+        ---
+        
+        ##--save-dev オプション
+        
+        インストールしたツールの情報を package.json に追記する。
+        
+        ---
+        
+        ##package.json
+        
+        ```json
+        {
+          "name": "grunt-test",
+          "version": "0.0.0",
+          "description": "",
+          "main": "index.js",
+          "scripts": {
+              "test": "echo \"Error: no test specified\" && exit 1"
+          },
+          "author": "",
+          "license": "ISC",
+          "devDependencies": {
+              "grunt": "^0.4.5"
+          }
+        }
+        ```
+        
+        devDependencies が追記されている。
+        
+        ---
+        
+        ##必要なツールのインストールが簡単にできるようになる
+        
+        ```
+        > npm install
+        ```
+        
+        ---
+        
+        ##メリット
+        
+        - 簡単に開発環境が構築できる。
+        - ツールのバージョンを開発者間で統一できる。
+        - リポジトリに入れるファイルのサイズを減らせる。
+        
+        ---
+        
+        ###Grunt のプラグインをインストールする
+        
+        ---
+        
+        ####JavaScript を minify するためのプラグイン。
+        
+        ```
+        > npm install grunt-contrib-uglify --save-dev
+        ```
+        
+        ####ファイルを監視して変更があればタスクを実行するプラグイン。
+        
+        ```
+        > npm install grunt-contrib-watch --save-dev
+        ```
+        
+        ---
+        ##Gruntfile.js を作成する
+        
+        - Grunt の設定ファイル。
+        - Ant の build.xml 、 Maven の pom.xml 、 Gradle の build.gradle。
+        
+        ---
+        ##Gruntfile.js
+        
+<pre class="brush: js; class-name: font-6;">
+        module.exports = function(grunt) {
+          // config
+          grunt.initConfig({
+            uglify: {
+              build: {
+               src: 'src/main/js/**/*.js',
+               dest: 'build/js/app.min.js'
+              }
+            },
+            watch: {
+              build: {
+               files: '<%=uglify.build.src%>',
+               tasks: ['uglify']
+              }
+            }
+          });
+
+          // plugin
+          grunt.loadNpmTasks('grunt-contrib-uglify');
+          grunt.loadNpmTasks('grunt-contrib-watch');
+
+          // tasks
+          grunt.registerTask('default', ['uglify', 'watch']);
+        };
+</pre>
+        
+        - `src/main/js` 以下のファイルを圧縮して `build/js/app.min.js` に出力。
+        - `src/main/js` 以下のファイルに変更があったら、圧縮タスクを実行。
+        
+        ---
+        ##ソースコード
+        
+        ###`src/main/js/app.js`
+        
+        ```js
+        $(function() {
+            $('h1').text('Hello Grunt!!');
+        });
+        ```
+        
+        ###`index.html`
+        
+        <pre><code class="html" data-trim>
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+          &lt;head&gt;
+            &lt;meta charset="Shift_JIS"&gt;
+            &lt;script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"&gt;&lt;/script&gt;
+            &lt;script src="build/js/app.min.js"&gt;&lt;/script&gt;
+          &lt;/head&gt;
+          &lt;body&gt;
+            &lt;h1&gt;&lt;/h1&gt;
+          &lt;/body&gt;
+        &lt;/html&gt;
+        </code></pre>
+        
+        ---
+        ##Grunt でコンパイル
+        
+        ```
+        >grunt
+        Running "uglify:build" (uglify) task
+        File build/js/app.min.js created: 57 B → 45 B
+        
+        Running "watch" task
+        Waiting...
+        ```
+        
+        minify してから監視がスタートする。
+        
+        ---
+        ##index.html を開いて見てみる
+        
+        ---
+        ##app.js を修正してみる
+        
+        ```js
+        $(function() {
+            $('h1').text('Change!!');
+        });
+        ```
+        
+        ファイルを保存すると、 watch タスクが動い minify が実行される。
+        
+        ```
+        >> File "src\main\js\app.js" changed.
+        Running "uglify:build" (uglify) task
+        File build/js/app.min.js created: 52 B → 40 B
+        
+        Done, without errors.
+        ```
+        
+        ---
+        ##index.html を開いて見てみる
+        
+        ---
+        ##Grunt の基本を学ぶなら
+        ###Grunt入門 (全12回)：ドットインストール
+        <iframe src="http://dotinstall.com/lessons/basic_grunt" width="100%" />
+        
+        ---
+        #以上です。
+        
+      </script>
+    </section>
+  </div>
+</div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+    </script>
+    <script src="http://localhost:35729/livereload.js"></script>
+  </body>
+</html>

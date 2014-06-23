@@ -1,4 +1,9 @@
 typescript-exercise.github.io
 =============================
 
-test
+勉強メモ＋サンプルアプリ公開用リポジトリ。
+
+
+使うかも
+
+http://plnkr.co/

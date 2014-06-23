@@ -1,0 +1,10 @@
+textarea {
+  resize: none;
+  min-height: 400px;
+}
+
+.vcenter {
+  display: inline-block;
+  vertical-align: middle;
+  float: none;
+}
