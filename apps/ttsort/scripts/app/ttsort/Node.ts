@@ -10,8 +10,10 @@ module ttsort {
         }
         
         addNextNode(next : Node) {
-            this.nextNodes.push(next);
-            next.previousNodes.push(this);
+            if (!_.contains(this.nextNodes, next)) {
+                this.nextNodes.push(next);
+                next.previousNodes.push(this);
+            }
         }
         
         isEntryNode() : boolean {

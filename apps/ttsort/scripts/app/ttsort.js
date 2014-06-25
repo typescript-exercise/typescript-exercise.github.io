@@ -134,8 +134,10 @@ var ttsort;
             this.name = name;
         }
         Node.prototype.addNextNode = function (next) {
-            this.nextNodes.push(next);
-            next.previousNodes.push(this);
+            if (!_.contains(this.nextNodes, next)) {
+                this.nextNodes.push(next);
+                next.previousNodes.push(this);
+            }
         };
 
         Node.prototype.isEntryNode = function () {
